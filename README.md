@@ -90,6 +90,6 @@ streamlit run app.py
 
 ## 🌐 Live Demo
 
-Check out the Live App : 
+Check out the Live App : https://heartdiseasepredictor-07.streamlit.app/
 
 ---
