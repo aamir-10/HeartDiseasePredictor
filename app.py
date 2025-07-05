@@ -63,7 +63,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Setting the App Header
-st.title("💓 Heart Disease Prediction App")
+st.title("💓 Heart Disease Predictor")
 st.markdown("*From data to diagnosis — Uncover your heart disease risk instantly!* ")
 
 # Sidebar Information
@@ -146,7 +146,7 @@ if st.button("🔍 Predict Risk"):
 
 # Show visualization of Gauge Chart only if prediction is triggered
 if prediction_triggered:
-    
+
     # Gauge Chart
     st.subheader("🧪 Predicted Risk Level")
     fig = go.Figure(go.Indicator(
