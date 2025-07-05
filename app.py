@@ -1,4 +1,4 @@
-# Importing the necessary libraries:-
+# Importing the necessary libraries
 
 import streamlit as st
 import pandas as pd
@@ -126,17 +126,28 @@ input_df = pd.DataFrame([input_data])
 st.markdown("### 📋 Patient Summary")
 st.dataframe(input_df)
 
+# Flag to check if prediction is made
+prediction_triggered = False
+
 if st.button("🔍 Predict Risk"):
-    prediction = model.predict(input_df)[0]
-    prob = model.predict_proba(input_df)[0][1] * 100
-
-    if prediction == 1:
-        st.error("⚠️ High Risk of Heart Disease Detected!")
+    # Validate if any input is None
+    if None in [age, sex, cp, trtbps, chol, thall, fbs, restecg, thalachh, exng, oldpeak, slp, caa, oxy]:
+        st.error("🚫 Please fill out all the required fields before prediction.")
     else:
-        st.success("✅ Low Risk of Heart Disease.")
-        st.balloons()
+        prediction = model.predict(input_df)[0]
+        prob = model.predict_proba(input_df)[0][1] * 100
+        prediction_triggered = True
 
-    # Gauge Chart for visualization of the risk meter.
+        if prediction == 1:
+            st.error("⚠️ High Risk of Heart Disease Detected!")
+        else:
+            st.success("✅ Low Risk of Heart Disease.")
+            st.balloons()
+
+# Show visualization of Gauge Chart only if prediction is triggered
+if prediction_triggered:
+    
+    # Gauge Chart
     st.subheader("🧪 Predicted Risk Level")
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -156,6 +167,7 @@ if st.button("🔍 Predict Risk"):
     st.plotly_chart(fig, use_container_width=True)
 
 # Vertical Bar Chart: User vs Ideal
+
 st.markdown("---")
 st.subheader("📌 Patient Metrics vs Standard Ranges")
 
@@ -188,12 +200,11 @@ fig_bar.add_trace(go.Bar(
     y=comparison_df["Healthy"],
     name='Ideal Range',
     marker=dict(
-        color='rgba(50, 250, 96, 0.8)',  # healthy green
+        color='rgba(50, 250, 96, 0.8)',  
         line=dict(color='rgba(30, 132, 73, 1)', width=2)
     )
 ))
 
-# Layout tweaks
 fig_bar.update_layout(
     barmode='group',
     template="plotly_white",
@@ -211,7 +222,6 @@ fig_bar.update_layout(
     )
 )
 
-# Custom toolbar configuration
 config = {
     "displayModeBar": True,
     "displaylogo": False,
@@ -229,8 +239,8 @@ config = {
     "responsive": True
 }
 
-
 st.plotly_chart(fig_bar, use_container_width=True, config=config)
+st.markdown("---")
 
 # Heart Rate vs Age Plot
 st.subheader("🫀 Heart Rate Comparison with Age")
@@ -326,7 +336,8 @@ config = {
 
 st.plotly_chart(fig_line_cp, use_container_width=True, config=config)
 
-# Feature Importance Graph 
+# Feature Importance Graph based on Random Forest Classifier Model:-
+
 st.markdown("---")
 st.subheader("💡 Feature Importance (Random Forest)")
 try:
@@ -337,8 +348,7 @@ try:
     }).sort_values("Importance")
 
     cmap = plt.cm.plasma
-    colors = cmap(feat_df["Importance"] / max(feat_df["Importance"])) # Normalization of Values
-
+    colors = cmap(feat_df["Importance"] / max(feat_df["Importance"]))
     fig2, ax = plt.subplots()
     ax.barh(feat_df["Feature"], feat_df["Importance"], color=colors)
     ax.set_xlabel("Importance Score")
