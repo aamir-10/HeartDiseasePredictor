@@ -5,10 +5,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 
-# --- Load model ---
+# Loading of the model
 model = joblib.load("heart_model.pkl")
 
-# --- Page Config ---
+# Page Configuration with some inline css.
 st.set_page_config(page_title="Heart Disease Predictor", layout="centered")
 st.markdown("""
 <style>
@@ -29,11 +29,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-# --- App Header ---
+# Setting the App Header
 st.title("💓 Heart Disease Prediction App")
-st.markdown("*From data to diagnosis — uncover your heart disease risk instantly!* ")
+st.markdown("*From data to diagnosis — Uncover your heart disease risk instantly!* ")
 
-# --- Sidebar Info ---
+# Sidebar Information
 with st.sidebar:
     st.title("📘 About")
     st.markdown("*Smart Health at your fingertips!*")
@@ -46,7 +46,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("~ Input your data to get started!")
 
-# --- User Input ---
+# User Input Label
 st.header("🧾 Enter Patient Details")
 
 col1, col2 = st.columns(2)
@@ -69,7 +69,7 @@ with col2:
     oxy = st.slider("Oxygen Saturation", 90.0, 100.0,value=None)
 
 
-# --- Encode Inputs ---
+# Encode Input Feaures
 input_data = {
     "age": age,
     "sex": 1 if sex == "Male" else 0,
@@ -89,7 +89,7 @@ input_data = {
 
 input_df = pd.DataFrame([input_data])
 
-# --- Show Input Summary ---
+# Showing of Input Summary of the Patient
 st.markdown("### 📋 Patient Summary")
 st.dataframe(input_df)
 
@@ -103,7 +103,7 @@ if st.button("🔍 Predict Risk"):
         st.success("✅ Low Risk of Heart Disease.")
         st.balloons()
 
-    # Gauge Chart
+    # Gauge Chart for visualization of the risk meter.
     st.subheader("🧪 Predicted Risk Level")
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -122,7 +122,7 @@ if st.button("🔍 Predict Risk"):
     ))
     st.plotly_chart(fig, use_container_width=True)
 
-# --- Vertical Bar Chart: User vs Ideal ---
+# Vertical Bar Chart: User vs Ideal
 st.markdown("---")
 st.subheader("📌 Patient Metrics vs Standard Ranges")
 
@@ -144,7 +144,7 @@ fig_bar.add_trace(go.Bar(
     y=comparison_df["User"],
     name='Your Value',
     marker=dict(
-        color='rgba(250, 3, 3, 0.85)',  # blood red
+        color='rgba(250, 3, 3, 0.85)',
         line=dict(color='rgba(192, 57, 43, 1)', width=2)
     )
 ))
@@ -180,30 +180,37 @@ fig_bar.update_layout(
 
 # Custom toolbar configuration
 config = {
-    'displayModeBar': True,
-    'displaylogo': False,
-    'modeBarButtonsToRemove': [
-        'select2d', 'lasso2d', 'autoScale2d', 'resetScale2d',
-        'hoverClosestCartesian', 'hoverCompareCartesian',
-        'toggleSpikelines', 'zoom2d', 'pan2d'
+    "displayModeBar": True,
+    "displaylogo": False,
+    "modeBarButtonsToRemove": [
+        "select2d",
+        "lasso2d",
+        "autoScale2d",
+        "resetScale2d",
+        "hoverClosestCartesian",
+        "hoverCompareCartesian",
+        "toggleSpikelines",
+        "zoom2d",
+        "pan2d"
     ],
-    'responsive': True
+    "responsive": True
 }
+
 
 st.plotly_chart(fig_bar, use_container_width=True, config=config)
 
-# --- Heart Rate vs Age Plot ---
+# Heart Rate vs Age Plot
 st.subheader("🫀 Heart Rate Comparison with Age")
 
-# Calculate ideal max heart rate
+# Calculate ideal max heart rate through the below formula
 ideal_max_hr = 220 - age
 
 fig_hr, ax_hr = plt.subplots(figsize=(6, 4))
 
-# Plot user's actual max heart rate
+# Plotting of user's actual max heart rate
 ax_hr.plot([age], [thalachh], marker='o', markersize=10, color='red', label="Your Max HR")
 
-# Plot ideal max heart rate line
+# Plotting of ideal max heart rate line
 ages = np.arange(18, 101)
 ideal_rates = 220 - ages
 ax_hr.plot(ages, ideal_rates, linestyle='--', color='blue', label="Ideal Max HR")
@@ -218,11 +225,10 @@ ax_hr.legend()
 ax_hr.grid(True)
 st.pyplot(fig_hr)
 
-# --- Line Chart: Chest Pain Type vs Predicted Risk ---# --- Line Chart: Chest Pain Type vs Predicted Risk ---
+# Line Chart: Chest Pain Type vs Predicted Risk
 st.markdown("---")
 st.subheader("💉 Risk Variation Across Chest Pain Types")
 
-# Chest pain type mapping
 cp_labels = {
     "Typical Angina": 0,
     "Atypical Angina": 1,
@@ -230,15 +236,13 @@ cp_labels = {
     "Asymptomatic": 3
 }
 
-# Colors for each chest pain type
 marker_colors = {
-    "Typical Angina": "#e74c3c",       # red
-    "Atypical Angina": "#3498db",      # blue
-    "Non-anginal Pain": "#f1c40f",     # yellow
-    "Asymptomatic": "#2ecc71"          # green
+    "Typical Angina": "#e74c3c",       
+    "Atypical Angina": "#3498db",      
+    "Non-anginal Pain": "#f1c40f",     
+    "Asymptomatic": "#2ecc71"          
 }
 
-# Generate predictions
 risk_dict = {}
 for label, cp_val in cp_labels.items():
     temp_data = input_data.copy()
@@ -247,15 +251,13 @@ for label, cp_val in cp_labels.items():
     risk = model.predict_proba(temp_df)[0][1] * 100
     risk_dict[label] = round(risk, 2)
 
-# Build line chart with colored markers
 fig_line_cp = go.Figure()
 
-# Add line
 fig_line_cp.add_trace(go.Scatter(
     x=list(risk_dict.keys()),
     y=list(risk_dict.values()),
     mode='lines',
-    line=dict(shape='spline', color="#822FA6", width=3),  # Distinct line color
+    line=dict(shape='spline', color="#822FA6", width=3),
     name="Risk Line"
 ))
 
@@ -269,7 +271,6 @@ for label in cp_labels.keys():
         name=label
     ))
 
-# Layout settings
 fig_line_cp.update_layout(
     xaxis_title="Chest Pain Type",
     yaxis_title="Predicted Risk (%)",
@@ -279,7 +280,6 @@ fig_line_cp.update_layout(
     margin=dict(t=30, b=60)
 )
 
-# Toolbar config
 config = {
     'displayModeBar': True,
     'displaylogo': False,
@@ -292,13 +292,11 @@ config = {
     ]
 }
 
-# Display
 st.plotly_chart(fig_line_cp, use_container_width=True, config=config)
 
-
-# --- Feature Importance ---
+# Feature Importance Graph 
 st.markdown("---")
-st.subheader("📊 Feature Importance (Random Forest)")
+st.subheader("💡 Feature Importance (Random Forest)")
 try:
     importances = model.feature_importances_
     feat_df = pd.DataFrame({
@@ -306,9 +304,8 @@ try:
         "Importance": importances
     }).sort_values("Importance")
 
-    # Use a color map based on importance
-    cmap = plt.cm.plasma # You can also try 'plasma', 'coolwarm', etc.
-    colors = cmap(feat_df["Importance"] / max(feat_df["Importance"]))  # Normalize
+    cmap = plt.cm.plasma
+    colors = cmap(feat_df["Importance"] / max(feat_df["Importance"])) # Normalization of Values
 
     fig2, ax = plt.subplots()
     ax.barh(feat_df["Feature"], feat_df["Importance"], color=colors)
@@ -319,3 +316,5 @@ try:
 
 except Exception as e:
     st.info("Feature importance not available for this model.")
+
+# --- End of the program ---
