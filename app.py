@@ -28,7 +28,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
 # Setting the App Header
 st.title("💓 Heart Disease Prediction App")
 st.markdown("*From data to diagnosis — Uncover your heart disease risk instantly!* ")
@@ -274,7 +273,6 @@ for label in cp_labels.keys():
 fig_line_cp.update_layout(
     xaxis_title="Chest Pain Type",
     yaxis_title="Predicted Risk (%)",
-    title="How Chest Pain Type Affects Your Risk",
     template="plotly_white",
     height=400,
     margin=dict(t=30, b=60)
@@ -316,5 +314,37 @@ try:
 
 except Exception as e:
     st.info("Feature importance not available for this model.")
+
+# Custom CSS for styling the app's background and Sidebar.
+
+st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(150deg, #330000, #000000);
+        background-attachment: fixed;
+        background-size: cover;
+        color: white;
+    }
+    h1, h2, h3, h4, h5, h6, .stMarkdown, .st-bb, .st-cb {
+        color: #ffffff;
+    }
+    .stSelectbox, .stSlider, .stRadio, .stNumberInput, .stTextInput, .stDataFrame, .stButton {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: white !important;
+    }
+    .css-1v0mbdj p {
+        color: white;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+    <style>
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(150deg, #550000, #1a0000);
+        box-shadow: 2px 0 6px rgba(0, 0, 0, 0.6);
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # --- End of the program ---
